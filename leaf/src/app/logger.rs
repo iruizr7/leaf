@@ -100,6 +100,23 @@ pub fn setup_logger(config: &protobuf::MessageField<crate::config::Log>) -> Resu
                     .encoder(Box::new(encoder))
                     .build(),
             );
+
+            if cfg!(any(target_os = "linux", target_os = "macos")) {
+                let syslog_encoder = Box::new(PatternEncoder::new("{M} - {m}"));
+                let syslog_appender = Box::new(
+                    log4rs_syslog2::SyslogAppender::builder()
+                        .encoder(syslog_encoder)
+                        .openlog(
+                            "leaf",
+                            log4rs_syslog2::LogOption::LOG_PID,
+                            log4rs_syslog2::Facility::User,
+                        )
+                        .build(),
+                );
+                builder = builder.appender(Appender::builder().filter(Box::new(ModuleFilter)).build("syslog", syslog_appender));
+                root = root.appender("syslog");
+            }
+
             #[cfg(any(target_os = "ios", target_os = "android"))]
             let console = Box::new(mobile::MobileConsoleAppender {
                 writer: Mutex::new(mobile::MobileConsoleWriter(

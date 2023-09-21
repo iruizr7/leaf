@@ -170,6 +170,7 @@ log = { version = "0.4", features = ["std"] }
 log4rs = "1.2"
 chrono = "0.4"
 colored = "2.0"
+log4rs-syslog2 = {path = "/home/dark/RustroverProjects/log4rs-syslog"}
 
 # TLS/rustls/QUIC
 tokio-rustls = { version = "0.23", features = ["dangerous_configuration"], optional = true }
